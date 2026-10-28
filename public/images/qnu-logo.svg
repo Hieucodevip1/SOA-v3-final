@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="100%" height="100%">
+  <circle cx="100" cy="100" r="96" fill="#ffffff" stroke="#004882" stroke-width="8"/>
+  <circle cx="100" cy="100" r="86" fill="none" stroke="#004882" stroke-width="2" stroke-dasharray="4,3"/>
+  <path id="textArcTop" d="M 22 100 A 78 78 0 0 1 178 100" fill="none" stroke="none"/>
+  <text font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="11.5" font-weight="900" fill="#004882">
+    <textPath href="#textArcTop" startOffset="50%" text-anchor="middle">
+      TRƯỜNG ĐẠI HỌC QUY NHƠN
+    </textPath>
+  </text>
+  <path id="textArcBottom" d="M 175 108 A 78 78 0 0 1 25 108" fill="none" stroke="none"/>
+  <text font-family="'Segoe UI', Roboto, Helvetica, Arial, sans-serif" font-size="12" font-weight="900" fill="#004882">
+    <textPath href="#textArcBottom" startOffset="50%" text-anchor="middle">
+      QUY NHON UNIVERSITY ★ 1977
+    </textPath>
+  </text>
+  <!-- QNU Central Emblem -->
+  <g transform="translate(100, 102) scale(0.65)">
+    <!-- Book / Foundation in Navy Blue -->
+    <path d="M -60 20 C -30 10 -10 25 0 35 C 10 25 30 10 60 20 L 55 45 C 30 35 10 45 0 52 C -10 45 -30 35 -55 45 Z" fill="#004882"/>
+    <!-- Central stylized letter Q and Flame in Crimson Red -->
+    <path d="M 0 -65 C -25 -65 -45 -45 -45 -15 C -45 15 -25 30 0 30 C 25 30 45 15 45 -15 C 45 -45 25 -65 0 -65 Z M 0 -48 C 15 -48 28 -35 28 -15 C 28 5 15 15 0 15 C -15 15 -28 5 -28 -15 C -28 -35 -15 -48 0 -48 Z" fill="#c31e24"/>
+    <path d="M -8 -50 Q 0 -85 15 -60 Q 22 -40 8 -25 Q 2 -15 0 -5 Q -2 -15 -6 -25 Q -15 -40 -8 -50 Z" fill="#c31e24"/>
+    <!-- Inner N & U lines -->
+    <path d="M -20 -5 L -20 20 L -8 20 L 5 -5 L 5 20 L 18 20 L 18 -20 L 6 -20 L -8 5 L -8 -20 L -20 -20 Z" fill="#004882"/>
+  </g>
+</svg>
+

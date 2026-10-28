@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cổng Thông Tin Đào Tạo – Trường Đại học Quy Nhơn (QNU)</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- ==========================================================================
+         1. MÀN HÌNH ĐĂNG NHẬP (CHUẨN FORM daotao.qnu.edu.vn/Login - ẢNH 1)
+         ========================================================================== -->
+    <div id="loginScreen">
+        <!-- Nửa trái: Cổng trường Đại học Quy Nhơn (Ảnh 1) -->
+        <div class="login-split-left"></div>
+
+        <!-- Nửa phải: Form đăng nhập chuẩn QNU -->
+        <div class="login-split-right">
+            <div class="login-card">
+                <!-- Branding Logo & Tên trường -->
+                <div class="login-header-branding">
+                    <img src="images/qnu_logo_official.png?v=3" alt="QNU Logo" class="qnu-logo-img">
+                    <div class="university-title">TRƯỜNG ĐẠI HỌC QUY NHƠN</div>
+                    <div class="portal-subtitle">CỔNG THÔNG TIN ĐÀO TẠO</div>
+                </div>
+
+                <!-- Tabs chuyển đổi Đăng nhập / Đăng ký -->
+                <div class="auth-tabs-nav">
+                    <button type="button" class="auth-tab-item active" id="tabBtnLogin" onclick="switchAuthMode('login')">Đăng nhập</button>
+                    <button type="button" class="auth-tab-item" id="tabBtnRegister" onclick="switchAuthMode('register')">Đăng ký tài khoản SV</button>
+                </div>
+
+                <!-- FORM 1: ĐĂNG NHẬP -->
+                <div id="authLoginFormContainer">
+                    <div class="login-form-heading">
+                        <div class="login-form-title">ĐĂNG NHẬP</div>
+                        <div class="login-form-caption">Cổng thông tin đào tạo</div>
+                    </div>
+
+                    <!-- Input Tên đăng nhập với viền và thông báo hợp lệ -->
+                    <div class="form-outline-group">
+                        <input type="text" id="loginUsername" class="form-outline-input" placeholder="Tên đăng nhập" autocomplete="username">
+                        <div id="usernameError" class="input-error-text">Tên đăng nhập là bắt buộc</div>
+                    </div>
+
+                    <!-- Input Mật khẩu -->
+                    <div class="form-outline-group">
+                        <input type="password" id="loginPassword" class="form-outline-input" placeholder="Mật khẩu" autocomplete="current-password">
+                        <div id="passwordError" class="input-error-text">Mật khẩu là bắt buộc</div>
+                    </div>
+
+                    <!-- Nút Đăng nhập xanh đen -->
+                    <button type="button" class="btn-qnu-primary" onclick="login()">Đăng nhập</button>
+
+                    <!-- Quên mật khẩu & Tạo tài khoản -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 14px; font-size: 13px;">
+                        <a href="javascript:void(0)" class="forgot-password-link" onclick="toast('Vui lòng liên hệ Phòng Đào tạo (P.104 Nhà A1) hoặc email: phongdaotao@qnu.edu.vn để cấp lại mật khẩu.', false)">Quên mật khẩu?</a>
+                        <a href="javascript:void(0)" onclick="switchAuthMode('register')" style="color: #004882; font-weight: 600; text-decoration: underline;">Tạo tài khoản SV →</a>
+                    </div>
+
+                    <!-- Demo tài khoản nhanh cho giảng viên chấm điểm / kiểm thử phân quyền -->
+                    <div class="quick-demo-accounts">
+                        <div class="quick-demo-title">
+                            <span>Chọn nhanh tài khoản kiểm thử:</span>
+                            <span style="font-weight: normal; color: #888;">MK: 123456</span>
+                        </div>
+                        <div class="quick-btn-group">
+                            <button type="button" class="quick-user-btn" onclick="quickFillLogin('SV001', '123456')">SV (SV001)</button>
+                            <button type="button" class="quick-user-btn" onclick="quickFillLogin('GV001', '123456')">GV (GV001)</button>
+                            <button type="button" class="quick-user-btn" onclick="quickFillLogin('admin', '123456')">Admin</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FORM 2: ĐĂNG KÝ TÀI KHOẢN SINH VIÊN -->
+                <div id="authRegisterFormContainer" style="display: none;">
+                    <div class="login-form-heading">
+                        <div class="login-form-title">ĐĂNG KÝ TÀI KHOẢN</div>
+                        <div class="login-form-caption">Dành cho sinh viên Trường ĐH Quy Nhơn</div>
+                    </div>
+
+                    <div class="form-outline-group">
+                        <input type="text" id="regMaSV" class="form-outline-input" placeholder="Mã sinh viên (VD: SV006)" autocomplete="off">
+                        <div id="regMaSVError" class="input-error-text">Mã sinh viên là bắt buộc</div>
+                    </div>
+
+                    <div class="form-outline-group">
+                        <input type="text" id="regHoTen" class="form-outline-input" placeholder="Họ và tên sinh viên" autocomplete="name">
+                        <div id="regHoTenError" class="input-error-text">Họ tên sinh viên là bắt buộc</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <div class="form-outline-group">
+                            <input type="text" id="regLop" class="form-outline-input" placeholder="Lớp (VD: DHKTPM20A)">
+                        </div>
+                        <div class="form-outline-group">
+                            <select id="regNganh" class="form-outline-input" style="padding: 10px 12px; font-size: 13.5px; background: #fff;">
+                                <option value="Công nghệ phần mềm">CN Phần mềm</option>
+                                <option value="Hệ thống thông tin">HT Thông tin</option>
+                                <option value="Khoa học máy tính">KH Máy tính</option>
+                                <option value="Mạng máy tính & ATTT">Mạng & ATTT</option>
+                                <option value="Trí tuệ nhân tạo">Trí tuệ nhân tạo</option>
+                                <option value="Khoa học dữ liệu">KH Dữ liệu</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-outline-group">
+                        <input type="email" id="regEmail" class="form-outline-input" placeholder="Email sinh viên (tùy chọn)" autocomplete="email">
+                    </div>
+
+                    <div class="form-outline-group">
+                        <input type="password" id="regPassword" class="form-outline-input" placeholder="Mật khẩu (ít nhất 6 ký tự)" autocomplete="new-password">
+                        <div id="regPasswordError" class="input-error-text">Mật khẩu phải có ít nhất 6 ký tự</div>
+                    </div>
+
+                    <div class="form-outline-group">
+                        <input type="password" id="regPasswordConfirm" class="form-outline-input" placeholder="Xác nhận lại mật khẩu" autocomplete="new-password">
+                        <div id="regPasswordConfirmError" class="input-error-text">Mật khẩu xác nhận không khớp</div>
+                    </div>
+
+                    <button type="button" class="btn-qnu-primary" style="background-color: #004882;" onclick="registerStudentAccount()">Tạo tài khoản</button>
+
+                    <div style="margin-top: 14px; text-align: center; font-size: 13.5px;">
+                        <a href="javascript:void(0)" onclick="switchAuthMode('login')" style="color: #004882; font-weight: 600; text-decoration: underline;">← Đã có tài khoản? Quay lại đăng nhập</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút cài đặt góc dưới phải như ảnh 1 -->
+            <button class="floating-settings-btn" style="display:none;" title="Cài đặt hệ thống" onclick="toast('Hệ thống Quản lý Đồ án Tốt nghiệp QNU - Kiến trúc SOA v2.0')">
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ==========================================================================
+         2. CỔNG CHÍNH ĐÀO TẠO (CHUẨN ẢNH 2 daotao.qnu.edu.vn)
+         ========================================================================== -->
+    <div id="appLayout" style="display: none;">
+
+        <!-- Top Header Navigation Bar (Ảnh 2) -->
+        <header class="top-navbar">
+            <div class="navbar-left">
+                <button class="hamburger-btn" onclick="toggleSidebar()" title="Đóng/Mở Menu">☰</button>
+                <span class="navbar-brand-name">TRƯỜNG ĐẠI HỌC QUY NHƠN</span>
+            </div>
+            <div class="navbar-right">
+                <!-- Chuông thông báo có badge số 1 như ảnh 2 -->
+                <button class="notif-bell-btn" onclick="showSection('notifications')" title="Thông báo hệ thống">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
+                    <span id="notifBadge" class="notif-badge-pill" style="display: none;">0</span>
+                </button>
+
+                <!-- Avatar người dùng & Menu đăng xuất -->
+                <div class="user-avatar-btn" onclick="toggleUserDropdown()" title="Tài khoản">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <button type="button" class="btn-primary-action" style="background:#b71c1c; padding: 4px 10px; font-size:12px;" onclick="logout()">
+                    Đăng xuất
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Body: Sidebar + Main Content Area -->
+        <div class="main-portal-body">
+
+            <!-- Sidebar Trái Xanh Đen (Ảnh 2) -->
+            <aside id="leftSidebar" class="left-sidebar">
+                <!-- Logo QNU tròn trên nền trắng -->
+                <div class="sidebar-header-logo">
+                    <div class="sidebar-logo-circle">
+                        <img src="images/qnu_logo_official.png?v=4" alt="QNU Logo" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%; display: block;">
+                    </div>
+                </div>
+
+                <!-- Thẻ thông tin người dùng: Vũ Đức Hiếu - Sinh viên - 4651050081 (Ảnh 2) -->
+                <div class="sidebar-user-card">
+                    <div class="sidebar-user-avatar">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                    <div id="sidebarUserName" class="sidebar-user-name">Vũ Đức Hiếu</div>
+                    <div id="sidebarUserRole" class="sidebar-user-role">Sinh viên - 4651050081</div>
+                </div>
+
+                <!-- Menu Accordions cuộn dọc -->
+                <div class="sidebar-nav-scroll">
+
+                    <!-- Accordion 1: TRANG CÁ NHÂN -->
+                    <div class="accordion-section">
+                        <button class="accordion-title" onclick="toggleAccordion(this)">
+                            <span>TRANG CÁ NHÂN</span>
+                            <span class="accordion-chevron">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="sidebar-nav-list">
+                                <li class="sidebar-nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+                                    <span class="nav-icon">📈</span>
+                                    <span id="navDashboardLabel">Tổng quan học tập</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="profile" onclick="showSection('profile')">
+                                    <span class="nav-icon">👤</span>
+                                    <span>Thông tin cá nhân</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="notifications" onclick="showSection('notifications')">
+                                    <span class="nav-icon">💬</span>
+                                    <span>Tin nhắn & Thông báo</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 2: HỌC VỤ (Ảnh 2) -->
+                    <div class="accordion-section">
+                        <button class="accordion-title" onclick="toggleAccordion(this)">
+                            <span id="navHocVuSectionTitle">HỌC VỤ</span>
+                            <span class="accordion-chevron">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="sidebar-nav-list">
+                                <li class="sidebar-nav-item" data-section="curriculum" onclick="showSection('curriculum')">
+                                    <span class="nav-icon">📖</span>
+                                    <span>Chương trình đào tạo</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="registration" onclick="showSection('registration')">
+                                    <span class="nav-icon">📝</span>
+                                    <span id="navRegLabel">Đăng ký đề tài tốt nghiệp</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="grades" onclick="showSection('grades')">
+                                    <span class="nav-icon">📊</span>
+                                    <span id="navGradesLabel">Xem điểm & Kết quả</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="schedule" onclick="showSection('schedule')">
+                                    <span class="nav-icon">📅</span>
+                                    <span>Thời khóa biểu & Lịch thi</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 3: QUẢN LÝ ĐÀO TẠO (Dành riêng cho Giảng viên / Giáo viên) -->
+                    <div id="sectionTeacherMenu" class="accordion-section" style="display: none;">
+                        <button class="accordion-title" onclick="toggleAccordion(this)">
+                            <span>QUẢN LÝ ĐÀO TẠO (GIẢNG VIÊN)</span>
+                            <span class="accordion-chevron">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="sidebar-nav-list">
+                                <li class="sidebar-nav-item" data-section="teacher-topics" onclick="showSection('teacher-topics')">
+                                    <span class="nav-icon">📚</span>
+                                    <span>Tạo & Quản lý lớp học phần</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="teacher-approvals" onclick="showSection('teacher-approvals')">
+                                    <span class="nav-icon">👥</span>
+                                    <span>Duyệt sinh viên đăng ký</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="teacher-grading" onclick="showSection('teacher-grading')">
+                                    <span class="nav-icon">✍️</span>
+                                    <span>Chấm điểm kết quả học tập</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="student-lookup" onclick="showSection('student-lookup')">
+                                    <span class="nav-icon">🔍</span>
+                                    <span>Tra cứu thông tin theo mã SV</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Accordion 4: QUẢN TRỊ HỆ THỐNG (Dành cho Admin) -->
+                    <div id="sectionAdminMenu" class="accordion-section" style="display: none;">
+                        <button class="accordion-title" onclick="toggleAccordion(this)">
+                            <span>QUẢN TRỊ HỆ THỐNG</span>
+                            <span class="accordion-chevron">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <ul class="sidebar-nav-list">
+                                <li class="sidebar-nav-item" data-section="admin-users" onclick="showSection('admin-users')">
+                                    <span class="nav-icon">🛡️</span>
+                                    <span>Quản lý tài khoản & Quyền</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="student-lookup" onclick="showSection('student-lookup')">
+                                    <span class="nav-icon">🔍</span>
+                                    <span>Tra cứu hồ sơ theo mã SV</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="admin-students" onclick="showSection('admin-students')">
+                                    <span class="nav-icon">🎓</span>
+                                    <span>Quản lý hồ sơ sinh viên</span>
+                                </li>
+                                <li class="sidebar-nav-item" data-section="soa-system" onclick="showSection('soa-system')">
+                                    <span class="nav-icon">🌐</span>
+                                    <span>Giám sát hệ thống SOA</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </aside>
+
+            <!-- Vùng nội dung chính (Ảnh 2) -->
+            <main class="main-content-panel">
+
+                <!-- Breadcrumbs -->
+                <div class="breadcrumb-bar">
+                    <span id="breadcrumbCategory" class="breadcrumb-home">Trang cá nhân</span>
+                    <span class="breadcrumb-divider">/</span>
+                    <span id="breadcrumbCurrent" class="breadcrumb-active">Tổng quan học tập</span>
+                </div>
+
+                <!-- Tabs bar (CHI TIẾT như ảnh 2) -->
+                <div class="portal-tabs-bar">
+                    <div class="portal-tab-item active" id="tabDetail">CHI TIẾT</div>
+                    <div class="portal-tab-item" id="tabHistory" onclick="showSection('registration')">LỊCH SỬ ĐĂNG KÝ</div>
+                    <div class="portal-tab-item" id="tabSOAStatus" onclick="showSection('soa-system')">TRẠNG THÁI SOA</div>
+                </div>
+
+                <!-- Banner cảnh báo Loose Coupling & Chịu lỗi SOA (nếu có service gián đoạn) -->
+                <div id="soaDegradedAlert" class="soa-degraded-banner" style="display: none;">
+                    <div class="soa-degraded-text" id="soaDegradedMsg">
+                        <strong>Dịch vụ nghiệp vụ đang gián đoạn:</strong> Một client service đang bảo trì. Nhờ kiến trúc SOA (Loose Coupling), các trang khác vẫn hoạt động bình thường!
+                    </div>
+                    <button class="soa-retry-btn" onclick="retryCurrentSection()">Thử kết nối lại</button>
+                </div>
+
+                <!-- ==================== VIEW 1: TỔNG QUAN (DASHBOARD) ==================== -->
+                <section id="view-dashboard" class="portal-view">
+                    <div id="dashContainer">
+                        <!-- Dynamic Dashboard rendered based on User Role (sinhvien / giangvien / admin) -->
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 2: CHƯƠNG TRÌNH ĐÀO TẠO (CHUẨN ẢNH 2) ==================== -->
+                <section id="view-curriculum" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <label class="filter-label">Chương trình đào tạo</label>
+                            <select id="curriculumSelect" class="filter-select" onchange="renderCurriculumTable()">
+                                <option value="CÔNG NGHỆ PHẦN MỀM" selected>CÔNG NGHỆ PHẦN MỀM</option>
+                                <option value="HỆ THỐNG THÔNG TIN">HỆ THỐNG THÔNG TIN</option>
+                                <option value="KHOA HỌC MÁY TÍNH">KHOA HỌC MÁY TÍNH</option>
+                                <option value="TRÍ TUỆ NHÂN TẠO">TRÍ TUỆ NHÂN TẠO</option>
+                            </select>
+                        </div>
+                        <div class="action-btn-group">
+                            <button class="btn-primary-action" onclick="showSection('registration')">
+                                Đi tới Đăng ký đề tài tốt nghiệp →
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">TT</th>
+                                    <th rowspan="2">MÃ HỌC PHẦN</th>
+                                    <th rowspan="2">TÊN HỌC PHẦN</th>
+                                    <th rowspan="2">SỐ TC</th>
+                                    <th colspan="7">SỐ TIẾT</th>
+                                    <th rowspan="2">HỌC PHẦN HỌC TRƯỚC</th>
+                                    <th rowspan="2">HỌC PHẦN THAY THẾ</th>
+                                </tr>
+                                <tr>
+                                    <th>LT</th>
+                                    <th>TH</th>
+                                    <th>TL</th>
+                                    <th>TT</th>
+                                    <th>BTL</th>
+                                    <th>DA</th>
+                                    <th>KL</th>
+                                </tr>
+                            </thead>
+                            <tbody id="curriculumTableBody">
+                                <!-- Rendered dynamically based on daotao.qnu.edu.vn format -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 3: ĐĂNG KÝ ĐỀ TÀI / LỚP HỌC PHẦN ==================== -->
+                <section id="view-registration" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <label class="filter-label">Lọc theo chuyên ngành</label>
+                            <select id="topicMajorFilter" class="filter-select" onchange="loadAvailableTopics()">
+                                <option value="">-- Tất cả các ngành --</option>
+                                <option value="Công nghệ phần mềm">Công nghệ phần mềm</option>
+                                <option value="Hệ thống thông tin">Hệ thống thông tin</option>
+                                <option value="Khoa học máy tính">Khoa học máy tính</option>
+                                <option value="Trí tuệ nhân tạo">Trí tuệ nhân tạo</option>
+                                <option value="Kỹ thuật dữ liệu">Kỹ thuật dữ liệu</option>
+                                <option value="Mạng máy tính & An toàn thông tin">Mạng máy tính & An toàn thông tin</option>
+                                <option value="Sư phạm Tin học">Sư phạm Tin học</option>
+                                <option value="Toán ứng dụng">Toán ứng dụng</option>
+                                <option value="Công nghệ kỹ thuật điện - điện tử">Công nghệ kỹ thuật điện - điện tử</option>
+                                <option value="Quản trị kinh doanh">Quản trị kinh doanh</option>
+                                <option value="Tài chính - Ngân hàng">Tài chính - Ngân hàng</option>
+                                <option value="Kế toán">Kế toán</option>
+                                <option value="Quản trị dịch vụ du lịch & lữ hành">Quản trị dịch vụ du lịch & lữ hành</option>
+                                <option value="Ngôn ngữ Anh">Ngôn ngữ Anh</option>
+                            </select>
+                        </div>
+                        <div class="action-btn-group">
+                            <button class="btn-primary-action" onclick="loadAvailableTopics(); loadStudentRegistrations();">
+                                Làm mới danh sách
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tab chuyển đổi danh sách: Đề tài mở & Sinh viên đã đăng ký (Toàn bộ chiều rộng) -->
+                    <div class="reg-view-tabs-header">
+                        <button type="button" id="tabBtnTopics" class="reg-view-tab-btn active" onclick="switchRegViewTab('topics')">
+                            <span>DANH SÁCH LỚP HỌC PHẦN / ĐỀ TÀI TỐT NGHIỆP MỞ ĐĂNG KÝ</span>
+                            <span id="topicCountBadge" class="reg-tab-badge">... đề tài</span>
+                        </button>
+                        <button type="button" id="tabBtnStudents" class="reg-view-tab-btn" onclick="switchRegViewTab('students')">
+                            <span id="regSectionHistoryHeading">DANH SÁCH TẤT CẢ SINH VIÊN ĐÃ ĐĂNG KÝ HỌC PHẦN / ĐỀ TÀI</span>
+                            <span id="regCountBadge" class="reg-tab-badge">... đăng ký</span>
+                        </button>
+                    </div>
+
+                    <!-- DANH SÁCH 1 (TOÀN BỘ THÔNG TIN Ở DƯỚI): LỚP HỌC PHẦN / ĐỀ TÀI TỐT NGHIỆP MỞ ĐĂNG KÝ -->
+                    <div id="panelAvailableTopics" class="reg-full-panel" style="display: block;">
+                        <div class="qnu-table-container">
+                            <table class="qnu-table">
+                                <thead>
+                                    <tr>
+                                        <th>TT</th>
+                                        <th>MÃ ĐỀ TÀI</th>
+                                        <th>TÊN ĐỀ TÀI / LỚP HỌC PHẦN</th>
+                                        <th>GIẢNG VIÊN HƯỚNG DẪN</th>
+                                        <th>NGÀNH GIẢNG DẠY</th>
+                                        <th>SỐ TC</th>
+                                        <th>MÔN BẮT BUỘC KHÓA TRƯỚC</th>
+                                        <th>GPA TỐI THIỂU</th>
+                                        <th>SỐ LƯỢNG ĐÃ ĐK / GIỚI HẠN</th>
+                                        <th>ĐIỀU KIỆN</th>
+                                        <th>THAO TÁC</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="availableTopicsTableBody">
+                                    <tr><td colspan="11" class="text-center">Đang tải danh sách đề tài...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- DANH SÁCH 2 (TOÀN BỘ THÔNG TIN Ở DƯỚI): TẤT CẢ SINH VIÊN ĐÃ ĐĂNG KÝ HỌC PHẦN / ĐỀ TÀI -->
+                    <div id="panelStudentRegistrations" class="reg-full-panel" style="display: none;">
+                        <div id="rightColFilterNotice" style="display:none; margin-bottom: 12px; padding: 10px 14px; background: #eef5fc; border-left: 4px solid #004882; border-radius: 4px; font-size: 13px; color: #0c3258;">
+                            <span>Đang lọc theo đề tài: <strong id="selectedTopicFilterLabel"></strong></span>
+                            <button class="btn-text-link" onclick="clearTopicFilterForStudents()" style="margin-left:12px; color:#c31e24; font-weight:700; cursor:pointer; background:none; border:none; text-decoration:underline;">[Xem tất cả sinh viên]</button>
+                        </div>
+                        <div class="qnu-table-container">
+                            <table class="qnu-table">
+                                <thead id="studentRegistrationsTableHead">
+                                    <tr>
+                                        <th>MÃ ĐK</th>
+                                        <th>MÃ ĐỀ TÀI</th>
+                                        <th>TÊN ĐỀ TÀI</th>
+                                        <th>GIẢNG VIÊN</th>
+                                        <th>NGÀY ĐĂNG KÝ</th>
+                                        <th>TRẠNG THÁI</th>
+                                        <th>ĐIỂM SỐ</th>
+                                        <th>NHẬN XÉT / LÝ DO</th>
+                                        <th>HỦY ĐĂNG KÝ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="studentRegistrationsTableBody">
+                                    <tr><td colspan="9" class="text-center">Đang tải dữ liệu đăng ký...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 4: XEM ĐIỂM & KẾT QUẢ HỌC TẬP ==================== -->
+                <section id="view-grades" class="portal-view" style="display: none;">
+                    <div id="gradesFilterBar" class="filter-dropdown-bar">
+                        <!-- Rendered dynamically based on Role: Student term info vs Teacher/Admin lookup bar -->
+                    </div>
+
+                    <!-- Thẻ hiển thị thông tin học vụ của sinh viên được tra cứu (Dành cho Admin & Giảng viên) -->
+                    <div id="gradesStudentDetailCard" style="display: none; margin-bottom: 20px;"></div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead id="gradesTableHead">
+                                <tr>
+                                    <th>TT</th>
+                                    <th>MÃ HỌC PHẦN</th>
+                                    <th>TÊN HỌC PHẦN</th>
+                                    <th>SỐ TC</th>
+                                    <th>GIẢNG VIÊN ĐÁNH GIÁ</th>
+                                    <th>ĐIỂM HỆ 10</th>
+                                    <th>ĐIỂM CHỮ</th>
+                                    <th>KẾT QUẢ</th>
+                                    <th>NHẬN XÉT CỦA GIẢNG VIÊN</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradesTableBody">
+                                <!-- Dynamic grades table -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 5: THÔNG TIN CÁ NHÂN ==================== -->
+                <section id="view-profile" class="portal-view" style="display: none;">
+                    <div class="profile-box">
+                        <h2 style="font-size: 18px; color: var(--qnu-navy-primary); font-weight: 800; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
+                            THÔNG TIN HỒ SƠ NGƯỜI DÙNG
+                        </h2>
+                        <div class="profile-grid">
+                            <div class="profile-item">
+                                <div class="profile-label">MÃ ĐĂNG NHẬP / MÃ SV</div>
+                                <div id="profUsername" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">HỌ VÀ TÊN</div>
+                                <div id="profFullName" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">VAI TRÒ TRUY CẬP</div>
+                                <div id="profRole" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">EMAIL LIÊN HỆ</div>
+                                <div id="profEmail" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">CHUYÊN NGÀNH</div>
+                                <div id="profMajor" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">LỚP SINH HOẠT</div>
+                                <div id="profClass" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">ĐIỂM GPA TÍCH LŨY</div>
+                                <div id="profGPA" class="profile-val">-</div>
+                            </div>
+                            <div class="profile-item">
+                                <div class="profile-label">SỐ TÍN CHỈ TÍCH LŨY</div>
+                                <div id="profCredits" class="profile-val">-</div>
+                            </div>
+                        </div>
+                        <div style="margin-top: 16px; padding: 12px; background: #f1f5f9; border-radius: 4px;">
+                            <div class="profile-label">CÁC MÔN HỌC BẮT BUỘC ĐÃ HOÀN THÀNH</div>
+                            <div id="profPassedCourses" style="font-size: 13.5px; font-weight: 600; color: #1e293b; margin-top: 4px;">-</div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 6: TIN NHẮN & THÔNG BÁO ==================== -->
+                <section id="view-notifications" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Hộp thư thông báo hệ thống (Event Bus bất đồng bộ)</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="loadNotificationsList()">Làm mới</button>
+                    </div>
+                    <div id="notificationsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+                        <!-- Dynamic notification cards -->
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW 7: THỜI KHÓA BIỂU & LỊCH THI ==================== -->
+                <section id="view-schedule" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Lịch bảo vệ đồ án tốt nghiệp - Niên khóa 2022 - 2026</span>
+                        </div>
+                    </div>
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>NGÀY BẢO VỆ</th>
+                                    <th>GIỜ</th>
+                                    <th>PHÒNG</th>
+                                    <th>HỘI ĐỒNG CHẤM</th>
+                                    <th>ĐỀ TÀI / HỌC PHẦN</th>
+                                    <th>SINH VIÊN THỰC HIỆN</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="text-center">15/12/2026</td>
+                                    <td class="text-center">08:00 - 09:30</td>
+                                    <td class="text-center">P.302 - Nhà A1</td>
+                                    <td>Hội đồng Công nghệ phần mềm 01</td>
+                                    <td>Xây dựng hệ thống quản lý đào tạo & đồ án theo kiến trúc SOA</td>
+                                    <td>Vũ Đức Hiếu (SV001)</td>
+                                </tr>
+                                <tr>
+                                    <td class="text-center">15/12/2026</td>
+                                    <td class="text-center">09:30 - 11:00</td>
+                                    <td class="text-center">P.302 - Nhà A1</td>
+                                    <td>Hội đồng Công nghệ phần mềm 01</td>
+                                    <td>Ứng dụng Trí tuệ nhân tạo nhận diện khuôn mặt điểm danh sinh viên</td>
+                                    <td>Lê Minh Châu (SV002)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- ==================== VIEW: TRA CỨU HỒ SƠ SINH VIÊN THEO MÃ SV (GIẢNG VIÊN & ADMIN) ==================== -->
+                <section id="view-student-lookup" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar" style="margin-bottom: 16px;">
+                        <div class="filter-group">
+                            <span class="filter-label">Tra cứu hồ sơ học vụ sinh viên theo mã SV (Dành cho Giảng viên & Quản trị viên)</span>
+                        </div>
+                        
+                    </div>
+
+                    <!-- Thanh tìm kiếm mã SV -->
+                    <div class="lookup-search-bar">
+                        <label for="lookupStudentInput" style="font-weight: 700; color: #004882; display: flex; align-items: center; gap: 6px;">
+                            <span>Nhập mã sinh viên:</span>
+                        </label>
+                        <input type="text" id="lookupStudentInput" class="lookup-input" placeholder="Nhập mã SV (VD: SV001, SV002, SV003, SV004, SV005...)" list="studentCodesList" onkeyup="if(event.key==='Enter') executeStudentLookup()">
+                        <datalist id="studentCodesList">
+                            <option value="SV001">SV001 - Vũ Đức Hiếu (CNPM)</option>
+                            <option value="SV002">SV002 - Lê Minh Châu (CNPM)</option>
+                            <option value="SV003">SV003 - Trần Quốc Đạt (HTTT)</option>
+                            <option value="SV004">SV004 - Nguyễn Thị Bích (CNPM)</option>
+                            <option value="SV005">SV005 - Phạm Văn Nam (KHMT)</option>
+                        </datalist>
+                        <button type="button" class="btn-primary-action" onclick="executeStudentLookup()">
+                            Tra cứu ngay
+                        </button>
+                        <button type="button" class="btn-confirm-cancel" onclick="resetStudentLookup()">
+                            Đặt lại
+                        </button>
+                    </div>
+
+                    <!-- Vùng hiển thị kết quả tra cứu -->
+                    <div id="lookupResultContainer">
+                        <div class="lookup-placeholder-box">
+                            <div style="font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 6px;">
+                                Chưa có sinh viên nào được tra cứu
+                            </div>
+                            <div style="max-width: 520px; margin: 0 auto; line-height: 1.5; color: #64748b;">
+                                Theo quy định bảo mật học vụ, thông tin sinh viên không hiển thị sẵn trên trang học vụ.
+                                Vui lòng nhập mã sinh viên vào ô tìm kiếm ở trên để tra cứu chi tiết hồ sơ (GPA, tín chỉ, môn tiên quyết, đề tài đăng ký và kết quả học tập).
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ==========================================================================
+                     PHÂN HỆ GIẢNG VIÊN (TEACHER VIEWS)
+                     ========================================================================== -->
+
+                <!-- VIEW T1: QUẢN LÝ ĐỀ TÀI & LỚP HỌC PHẦN -->
+                <section id="view-teacher-topics" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Quản lý lớp học phần & đề tài hướng dẫn</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="openTopicModal()">
+                            Tạo lớp học phần / đề tài mới
+                        </button>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>MÃ ĐỀ TÀI</th>
+                                    <th>TÊN LỚP HỌC PHẦN / ĐỀ TÀI</th>
+                                    <th>GIẢNG VIÊN HƯỚNG DẪN</th>
+                                    <th>NGÀNH GIẢNG DẠY</th>
+                                    <th>SỐ TC</th>
+                                    <th>MÔN BẮT BUỘC KHÓA TRƯỚC</th>
+                                    <th>GIỚI HẠN SV</th>
+                                    <th>GPA TỐI THIỂU</th>
+                                    <th>TRẠNG THÁI MỞ</th>
+                                    <th>THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherTopicsTableBody">
+                                <!-- Dynamic teacher topics list -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- VIEW T2: DUYỆT SINH VIÊN ĐĂNG KÝ -->
+                <section id="view-teacher-approvals" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Duyệt sinh viên đăng ký lớp học phần / đề tài</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="loadTeacherApprovals()">Làm mới</button>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>MÃ ĐK</th>
+                                    <th>MÃ SV</th>
+                                    <th>HỌ VÀ TÊN SINH VIÊN</th>
+                                    <th>LỚP</th>
+                                    <th>GPA SINH VIÊN</th>
+                                    <th>MÃ ĐỀ TÀI</th>
+                                    <th>TÊN ĐỀ TÀI ĐĂNG KÝ</th>
+                                    <th>NGÀY ĐĂNG KÝ</th>
+                                    <th>TRẠNG THÁI HIỆN TẠI</th>
+                                    <th>THAO TÁC DUYỆT</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherApprovalsTableBody">
+                                <!-- Dynamic approvals list -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- VIEW T3: CHẤM ĐIỂM KẾT QUẢ HỌC TẬP -->
+                <section id="view-teacher-grading" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Chấm điểm kết quả đồ án tốt nghiệp của sinh viên</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="loadTeacherGrading()">Làm mới danh sách</button>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>MÃ ĐK</th>
+                                    <th>MÃ SV</th>
+                                    <th>HỌ TÊN SINH VIÊN</th>
+                                    <th>TÊN ĐỀ TÀI / HỌC PHẦN</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th>ĐIỂM HIỆN TẠI</th>
+                                    <th>NHẬN XÉT ĐÁNH GIÁ</th>
+                                    <th>THAO TÁC CHẤM</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherGradingTableBody">
+                                <!-- Dynamic grading list -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- ==========================================================================
+                     PHÂN HỆ QUẢN TRỊ ADMIN (ADMIN VIEWS)
+                     ========================================================================== -->
+
+                <!-- VIEW A1: QUẢN LÝ NGƯỜI DÙNG & PHÂN QUYỀN -->
+                <section id="view-admin-users" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Danh sách tài khoản hệ thống (admin / giangvien / sinhvien)</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="openUserModal()">Tạo tài khoản mới</button>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>MÃ TK</th>
+                                    <th>TÊN ĐĂNG NHẬP</th>
+                                    <th>HỌ VÀ TÊN</th>
+                                    <th>EMAIL</th>
+                                    <th>VAI TRÒ</th>
+                                    <th>MÃ SV</th>
+                                    <th>NGÀNH</th>
+                                    <th>NGÀY TẠO</th>
+                                    <th>THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUsersTableBody">
+                                <!-- Dynamic users list -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- VIEW A2: QUẢN LÝ SINH VIÊN TOÀN TRƯỜNG -->
+                <section id="view-admin-students" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Quản lý hồ sơ sinh viên, GPA và môn tiên quyết đã học</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="openStudentModal()">Thêm sinh viên mới</button>
+                    </div>
+
+                    <div class="qnu-table-container">
+                        <table class="qnu-table">
+                            <thead>
+                                <tr>
+                                    <th>MÃ SV</th>
+                                    <th>HỌ VÀ TÊN</th>
+                                    <th>EMAIL</th>
+                                    <th>LỚP</th>
+                                    <th>CHUYÊN NGÀNH</th>
+                                    <th>ĐIỂM GPA</th>
+                                    <th>TÍN CHỈ</th>
+                                    <th>CÁC MÔN ĐÃ HỌC</th>
+                                    <th>THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminStudentsTableBody">
+                                <!-- Dynamic students list -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+
+                <!-- VIEW A3: GIÁM SÁT HỆ THỐNG SOA & KIỂM THỬ GIẢM SỰ PHỤ THUỘC -->
+                <section id="view-soa-system" class="portal-view" style="display: none;">
+                    <div class="filter-dropdown-bar">
+                        <div class="filter-group">
+                            <span class="filter-label">Kiến trúc SOA: Service Registry, Event Bus, Circuit Breaker, Loose Coupling</span>
+                        </div>
+                        <button class="btn-primary-action" onclick="loadSoaSystemView()">Làm mới trạng thái</button>
+                    </div>
+
+                    <div id="soaSystemBox">
+                        <!-- Dynamic SOA status cards & tables -->
+                    </div>
+                </section>
+
+            </main>
+        </div>
+
+        <!-- Floating action button at bottom right (Ảnh 2) -->
+        <button class="floating-settings-btn" style="display:none;" title="Thao tác nhanh" onclick="showSection('soa-system')">
+        </button>
+    </div>
+
+
+    <!-- ==========================================================================
+         MODAL POPUPS DÙNG CHUNG
+         ========================================================================== -->
+    <div id="modalContainer" style="display: none;"></div>
+
+    <!-- Container Toast thông báo -->
+    <div id="toastBox"></div>
+
+    <!-- Scripts -->
+    <script src="js/app.js"></script>
+</body>
+
+</html>
